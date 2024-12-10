@@ -5,5 +5,77 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Mark Attendance</h1>
+    <div class="card card-danger">
+        <div class="card-header">
+            <h3 class="card-title">Different Width</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-6">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">Check In Time</label>
+                            {% if attendanceData is None %}
+                                <input type="text" class="form-control" name="check_in_time"  readonly>
+                                <div class="card-footer">
+                                    <button type="submit" class="btn btn-primary">Log In</button>
+                                </div>
+                            {% else %}
+                                <input type="text" class="form-control" value="{{  attendanceData.check_in_time }}"  readonly>
+                                <div class="card-footer">
+                                    <button type="submit" class="btn btn-primary" disabled>Log In</button>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </form>
+                </div>
+                <div class="col-6">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">Check Out Time</label>
+                            {% if attendanceData  %}
+                                {% if attendanceData.check_out_time is None %}
+                                    <input type="text"  class="form-control" name="check_out_time" readonly>
+                                    <div class="card-footer">
+                                        <button type="submit" class="btn btn-danger">Logout</button>
+                                    </div>
+                                {% else %}
+                                    <input type="text" class="form-control" value="{{  attendanceData.check_out_time }}"  readonly>
+                                    <div class="card-footer">
+                                        <button type="submit" class="btn btn-primary" disabled>Log Out</button>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- /.card-body -->
+    </div>
+    <script>
+        function startTime() {
+          const today = new Date();
+          let h = today.getHours();
+          let m = today.getMinutes();
+          let s = today.getSeconds();
+          m = checkTime(m);
+          s = checkTime(s);
+          {% if attendanceData is None %}
+            document.querySelector("[name='check_in_time']").value = h + ":" + m + ":" + s;
+          {% endif %}
+          {% if attendanceData.check_out_time is None %}
+            document.querySelector("[name='check_out_time']").value = h + ":" + m + ":" + s;
+          {% endif %}
+          setTimeout(startTime, 1000);
+        }
+        
+        function checkTime(i) {
+          if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
+          return i;
+        }
+        startTime();
+    </script>
 {% endblock %}

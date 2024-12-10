@@ -98,7 +98,7 @@ class EmployeeAttendance(models.Model):
         unique_together = ("employee", "date")  # Ensures one attendance record per employee per date
 
     def __str__(self):
-        return f"{self.employee.name} - {self.date}"
+        return f"{self.employee.first_name} - {self.date}"
     
 class EmployeeShortLeave(models.Model):
     employee = models.ForeignKey(

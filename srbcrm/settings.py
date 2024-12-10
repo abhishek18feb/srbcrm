@@ -148,3 +148,5 @@ AUTHENTICATION_BACKENDS = [
     'employee.backends.CustomBackend', 
     'django.contrib.auth.backends.ModelBackend', 
 ]
+
+LOGIN_URL = '/employee/login/'
