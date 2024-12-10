@@ -4,8 +4,11 @@ from django.contrib import messages
 from django.views.decorators.csrf import csrf_protect
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Employee, EmployeeAttendance
+from .models import Employee, EmployeeAttendance, EmployeeShortLeave
 from datetime import date
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.core.serializers.json import DjangoJSONEncoder
 # Create your views here.
 
 LOGIN_REDIRECT_URL='employee/login'
@@ -48,4 +51,46 @@ def mark_attendance(request):
     print(request.user.username, request.user.email, request.user.id, today)
     print(f"Attendance Data {attendanceData}")
     return render(request, 'attendance.html', {'user':user, 'attendanceData':attendanceData}) 
+
+@login_required
+def employee_short_leave_list(request):
+    user = request.user
+    today = date.today()
+    if user.role == 'admin':
+        leaveRequestData = EmployeeShortLeave.objects.all()
+    else:
+        leaveRequestData = EmployeeShortLeave.objects.filter(employee_id=user.id)
+    print(f"leaveRequestData {type(leaveRequestData)}")
+    return render(request, 'short_leave_list.html', {'page_title':"Short Leaves", leaveRequestData: leaveRequestData}) 
+
+@require_POST
+@login_required
+def apply_short_leave(request):
+    user = request.user
+    today = date.today()
+    if request.method == "POST":
+        try:
+            requestDate = request.POST.get('date')
+            leaveStart = request.POST.get('leave_start')
+            leaveEnd = request.POST.get('leave_end')
+            reaSon = request.POST.get('reason')
+            employeeShortLeaveObj = EmployeeShortLeave(date=requestDate, leave_start=leaveStart, leave_end=leaveEnd, reason=reaSon, employee_id=user.id)
+            employeeShortLeaveObj.save()
+            # Convert the object to a dictionary for JSON response
+            response_data = {
+                "id": employeeShortLeaveObj.id,
+                "employee_id": employeeShortLeaveObj.employee_id,
+                "leave_date": employeeShortLeaveObj.date,
+                "leave_start": employeeShortLeaveObj.leave_start,
+                "leave_end": employeeShortLeaveObj.leave_end,
+                "leave_reason": employeeShortLeaveObj.reason,
+            }
+            print(response_data)
+            # Return the saved object as JSON
+            return JsonResponse({"status": "success", "data": response_data}, encoder=DjangoJSONEncoder, status=200)
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)}, status=400)
+
+
+
 

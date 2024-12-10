@@ -110,7 +110,15 @@ class EmployeeShortLeave(models.Model):
     leave_start = models.TimeField()  # Start time of the short leave
     leave_end = models.TimeField(null=True, blank=True)  # End time of the short leave
     reason = models.TextField(blank=True, null=True)  # Optional reason for the leave
-    approved = models.BooleanField(default=False)  # Approval status for the leave
+    approved = models.CharField(
+        max_length=10,
+        choices=(
+            ("Approve", "Approve"),
+            ("Pending", "Pending"),
+            ("Rejected", "Rejected"),
+        ),
+        default="Pending"
+    )    #models.BooleanField(default=False)  # Approval status for the leave
 
     class Meta:
         ordering = ['date', 'leave_start']

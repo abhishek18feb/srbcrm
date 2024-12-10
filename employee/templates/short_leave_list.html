@@ -1,0 +1,139 @@
+{% extends "inner_layout.html" %}
+
+{% block title  %}
+    Short Leave List
+{% endblock %}
+
+{% block content %}
+
+<div class="modal fade" id="modal-default">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Apply Short Leaves</h4>
+          <button type="button" id="dismiss-modal-btn" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <form id="ajax-form">
+                {% csrf_token %}
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Day</label>
+                        <input type="date"  class="form-control" name="date" placeholder="Select Date" min={new Date().toISOString().split('T')[0]}>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Out Time</label>
+                        <input type="time" class="form-control" name="leave_start" placeholder="Out Time" min="09:00" max="18:00">
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">In Time</label>
+                        <input type="time" class="form-control" name="leave_end" placeholder="In Time" min="10:00" max="19:00">
+                    </div>
+                    <div class="form-group">
+                        <label>Reason:</label>
+                        <textarea class="form-control" rows="3" name="reason" style="height: 88px;"></textarea>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer">
+                  <button type="submit" class="btn btn-primary float-right">Submit</button>
+                </div>
+              </form>
+        </div>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+<section class="content">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Bordered Table</h3>
+              <a href="javascript:void(0);" class="btn btn-primary float-right" data-toggle="modal" data-target="#modal-default">Add Short Leave</a>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th style="width: 10px">#</th>
+                    <th>Date</th>
+                    <th>Out Time</th>
+                    <th>In Time</th>
+                    <th style="width: 40px">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1.</td>
+                    <td>10-12-2024</td>
+                    <td>10:00</td>
+                    <td>12:00</td>
+                    <td><span class="badge bg-danger">Pending</span></td>
+                  </tr>
+                  <tr>
+                    <td>2.</td>
+                    <td>10-12-2024</td>
+                    <td>10:00</td>
+                    <td>12:00</td>
+                    <td><span class="badge bg-success">Approved</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- /.card-body -->
+            <div class="card-footer clearfix">
+              <ul class="pagination pagination-sm m-0 float-right">
+                <li class="page-item"><a class="page-link" href="#">«</a></li>
+                <li class="page-item"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item"><a class="page-link" href="#">»</a></li>
+              </ul>
+            </div>
+          </div>
+          <!-- /.card -->
+
+    
+        </div>
+      
+      </div>
+
+
+ 
+      <!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </section>
+    <script>
+        document.getElementById("ajax-form").addEventListener("submit", function (event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            const formData = new FormData(this); // Collect form data
+
+            // Send AJAX request
+            fetch('/employee/apply-short-leave/', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value, // For Django
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('response data', data)
+                location.reload();
+            })
+            .catch(error => {
+                console.log('response error', error)
+                $('#modal-default').modal('hide');
+                // Handle error
+                // document.getElementById("response").innerHTML = `<p>Error: ${error.message}</p>`;
+            });
+        });
+    </script>
+{% endblock %}
