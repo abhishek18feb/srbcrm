@@ -57,7 +57,7 @@ def employee_short_leave_list(request):
     user = request.user
     today = date.today()
     if user.role == 'admin':
-        leaveRequestData = EmployeeShortLeave.objects.all()
+        leaveRequestData = EmployeeShortLeave.objects.all().order_by('date')
     else:
         leaveRequestData = EmployeeShortLeave.objects.filter(employee_id=user.id)
     print(f"leaveRequestData {type(leaveRequestData)}")
