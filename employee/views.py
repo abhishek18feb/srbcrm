@@ -9,6 +9,7 @@ from datetime import date
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.core.serializers.json import DjangoJSONEncoder
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 # Create your views here.
 
 LOGIN_REDIRECT_URL='employee/login'
@@ -60,8 +61,18 @@ def employee_short_leave_list(request):
         leaveRequestData = EmployeeShortLeave.objects.all().order_by('date')
     else:
         leaveRequestData = EmployeeShortLeave.objects.filter(employee_id=user.id)
-    print(f"leaveRequestData {type(leaveRequestData)}")
-    return render(request, 'short_leave_list.html', {'page_title':"Short Leaves", leaveRequestData: leaveRequestData}) 
+    # Paginate the queryset with 10 items per page
+    page_number = request.GET.get('page')
+    paginator = Paginator(leaveRequestData, 3)
+    try:
+        page = paginator.get_page(page_number)
+    except PageNotAnInteger:
+        page = paginator.get_page(1)
+    except EmptyPage:
+        page = paginator.get_page(page.num_pages)
+    for leavedata in page:
+        print(f"Title: {leavedata.date}, Author: {leavedata.leave_start}, Year: {leavedata.leave_end}, Year: {leavedata.reason}")
+    return render(request, 'short_leave_list.html', {'page_title':"Short Leaves", "leaveRequestData": page, "page_number":page_number}) 
 
 @require_POST
 @login_required

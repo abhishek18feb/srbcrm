@@ -65,35 +65,35 @@
                     <th>Date</th>
                     <th>Out Time</th>
                     <th>In Time</th>
+                    <th>View</th>
                     <th style="width: 40px">Status</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>1.</td>
-                    <td>10-12-2024</td>
-                    <td>10:00</td>
-                    <td>12:00</td>
-                    <td><span class="badge bg-danger">Pending</span></td>
-                  </tr>
-                  <tr>
-                    <td>2.</td>
-                    <td>10-12-2024</td>
-                    <td>10:00</td>
-                    <td>12:00</td>
-                    <td><span class="badge bg-success">Approved</span></td>
-                  </tr>
+                  {% for leavedata in leaveRequestData %}
+                    <tr>
+                      <td>{{ forloop.counter }}</td>
+                      <td>{{ leavedata.date }}</td>
+                      <td>{{ leavedata.leave_start }}</td>
+                      <td>{{ leavedata.leave_end }}</td>
+                      
+                      <td><a href="javascript:void(0);" class="btn btn-info"><i class="fas fa-eye"></i></a></td>
+                      <td><span class="badge bg-danger">Pending</span></td>
+                    </tr>
+                  {% endfor %}
                 </tbody>
               </table>
             </div>
             <!-- /.card-body -->
             <div class="card-footer clearfix">
               <ul class="pagination pagination-sm m-0 float-right">
-                <li class="page-item"><a class="page-link" href="#">«</a></li>
-                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item"><a class="page-link" href="#">»</a></li>
+                {% if leaveRequestData.has_previous %}
+                  <li class="page-item"><a class="page-link" href="?page={{ leaveRequestData.previous_page_number }}">«</a></li>
+                {% endif %}
+                <li class="page-item"><a class="page-link" href="javascript:void(0);"><span>Page {{ leaveRequestData.number }} of {{ page.paginator.num_pages }}</span></a></li>
+                {% if leaveRequestData.has_next %}
+                  <li class="page-item"><a class="page-link" href="?page={{ leaveRequestData.next_page_number }}">»</a></li>
+                {% endif %}
               </ul>
             </div>
           </div>
