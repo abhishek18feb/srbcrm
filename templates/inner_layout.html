@@ -39,6 +39,39 @@
     {% comment %} <script src="{% static 'js/main.js' %}" defer></script> {% endcomment %}
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
+    {% if messages %}
+      <ul>
+          {% for message in messages %}
+              <li>{{ message }}</li>
+          {% endfor %}
+      </ul>
+    {% endif %}
+    <div class="modal fade" id="modal-logout-confirm">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Are you sure you want to log out?</h4>
+            <button type="button" id="dismiss-modal-btn" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+              <form method="post" action="{% url 'logout_confirmation' %}">
+                  {% csrf_token %}
+                  <div class="card-body">
+                    Logout Warning
+                  </div>
+                  <!-- /.card-body -->
+                  <div class="card-footer">
+                    <button type="submit">Logout</button>
+                  </div>
+                </form>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
     <div class="wrapper">
 
         <!-- Preloader -->
@@ -282,6 +315,14 @@
                     <i class="nav-icon fas fa-columns"></i>
                     <p>
                       Kanban Board
+                    </p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="javascript:void(0);" data-toggle="modal" data-target="#modal-logout-confirm" class="nav-link">
+                    <i class="nav-icon fas fa-columns"></i>
+                    <p>
+                      Logout
                     </p>
                   </a>
                 </li>

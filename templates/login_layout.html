@@ -16,6 +16,13 @@
   <link rel="stylesheet" href="{% static 'dist/css/adminlte.min.css' %}">
 </head>
 <body class="hold-transition login-page">
+    {% if messages %}
+      <ul>
+          {% for message in messages %}
+              <li>{{ message }}</li>
+          {% endfor %}
+      </ul>
+    {% endif %}
     {% block content %}
     {% endblock %}
 <!-- /.login-box -->

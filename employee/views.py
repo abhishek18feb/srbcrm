@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_protect
 from django.shortcuts import render, redirect
@@ -10,12 +10,17 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.contrib import messages
 # Create your views here.
 
 LOGIN_REDIRECT_URL='employee/login'
 
 @csrf_protect
 def login_view(request):
+    if request.user.is_authenticated:
+        # User is logged in
+        return redirect('mark_attendance')
+    
     if request.method == "POST":
         username = request.POST['email']  # Use email as username
         password = request.POST['password']
@@ -101,6 +106,18 @@ def apply_short_leave(request):
             return JsonResponse({"status": "success", "data": response_data}, encoder=DjangoJSONEncoder, status=200)
         except Exception as e:
             return JsonResponse({"status": "error", "message": str(e)}, status=400)
+        
+@login_required      
+def custom_logout_view(request):
+    # Perform any custom logic before logging out
+    # Example: Logging, messages, cleanup, etc.
+    print(f"User {request.user.username} is logging out.")
+
+    # Log out the user
+    logout(request)
+
+    # Redirect to a custom page after logout
+    return redirect('login')
 
 
 
